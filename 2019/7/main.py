@@ -233,23 +233,24 @@ class Program(object):
                 self.i += 4
 
 if __name__ == '__main__':
-    # with open('input.txt', 'r') as f:
-        # line = f.read().splitlines()[0]
-    # line = line.split(',')
-    # #phase_settings = (4, 3, 2, 1, 0)
-    # #phase_settings = (0, 1, 2, 3, 4)
-    # phase_settings = (1, 0, 4, 3, 2)
-    # #o = 0
-    # #for phase in phase_settings:
-    # #    o = run_program(list(line), phase, o)
-    # #print(o)
-    # output_codes = []
-    # for phase_settings in itertools.permutations([0,1,2,3,4]):
-        # output = 0
-        # for phase in phase_settings:
-            # output = run_program(list(line), phase, output)
-        # output_codes.append(output)
-    # print(max(output_codes))
+    # part 1
+    with open('input.txt', 'r') as f:
+        line = f.read().splitlines()[0]
+    line = line.split(',')
+    #phase_settings = (4, 3, 2, 1, 0)
+    #phase_settings = (0, 1, 2, 3, 4)
+    phase_settings = (1, 0, 4, 3, 2)
+    #o = 0
+    #for phase in phase_settings:
+    #    o = run_program(list(line), phase, o)
+    #print(o)
+    output_codes = []
+    for phase_settings in itertools.permutations([0,1,2,3,4]):
+        output = 0
+        for phase in phase_settings:
+            output = run_program(list(line), phase, output)
+        output_codes.append(output)
+    print(max(output_codes))
 
     # part 2
     with open('input.txt', 'r') as f:
