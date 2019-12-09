@@ -1,3 +1,5 @@
+import numpy as np
+
 class Program(object):
 
     def __init__(self, instruction_list):
@@ -34,13 +36,14 @@ class Program(object):
         return int(a)
 
 
-    def run_program(self, input_setting):
+    def run(self, input_setting):
 
         self.output = -1
         self.i = 0
         self.base = 0
+        self.steps = 0
 
-        while self.i < len(self.instruction_list):
+        while self.steps < 500000:
             code = self.instruction_list[self.i]
             # opcode
             oc = int(code[-2:])
@@ -148,7 +151,9 @@ class Program(object):
 
                 self.i += 2
 
-        return output
+            self.steps += 1
+
+        return self.output
 
 if __name__ == '__main__':
     # with open('test2.txt', 'r') as f:
@@ -164,4 +169,8 @@ if __name__ == '__main__':
     # pad the program
     line.extend(['0']*1000)
     program = Program(line)
-    program.run_program(1)
+    program.run(1)
+
+    program = Program(line)
+    program.run(2)
+
