@@ -1,149 +1,154 @@
+class Program(object):
 
-def get_arg(line, i, pc):
-    global base
-    # position mode
-    if int(pc) == 0:   
-        a = line[i]
-    # value mode
-    elif int(pc) == 1:
-        a = i
-    # relative mode
-    elif int(pc) == 2:
-        a = line[i + base]
-    else:
-        raise ValueError('invalid parameter')
+    def __init__(self, instruction_list):
+        self.i = 0
+        self.base = 0
+        self.output = -1
+        self.instruction_list = list(instruction_list)
 
-    return int(a)
-
-def get_arg_address(line, i , pc):
-    global base
-    # position mode
-    if int(pc) == 0:   
-        a = i
-    # relative mode
-    elif int(pc) == 2:
-        a = i + base
-    else:
-        raise ValueError('invalid parameter')
-
-    return int(a)
-
-def run_program(line, input_setting):
-    global base
-
-    output = -1
-    i = 0
-    base = 0
-
-    while i < len(line):
-        code = line[i]
-        # opcode
-        oc = int(code[-2:])
-
-        # param code need to flip to left to right
-        if len(code[:-2]):
-            pc = '{:03d}'.format(int(code[:-2]))[::-1]
+    def get_arg(self, i, pc):
+        # position mode
+        if int(pc) == 0:   
+            a = self.instruction_list[i]
+        # value mode
+        elif int(pc) == 1:
+            a = i
+        # relative mode
+        elif int(pc) == 2:
+            a = self.instruction_list[i + self.base]
         else:
-            pc = '000'
+            raise ValueError('invalid parameter')
 
-        if oc == 99:
-            return output
+        return int(a)
 
-        if oc == 1:
-            i0, i1, o = [int(x) for x in line[(i+1):(i+4)]]
+    def get_arg_address(self, i, pc):
+        # position mode
+        if int(pc) == 0:   
+            a = i
+        # relative mode
+        elif int(pc) == 2:
+            a = i + self.base
+        else:
+            raise ValueError('invalid parameter')
 
-            a = get_arg(line, i0, pc[0])
-            b = get_arg(line, i1, pc[1])
-            c = get_arg_address(line, o, pc[2])
+        return int(a)
 
-            line[c] = str(a + b)
 
-            i += 4
+    def run_program(self, input_setting):
 
-        elif oc == 2:
-            i0, i1, o = [int(x) for x in line[(i+1):(i+4)]]
+        self.output = -1
+        self.i = 0
+        self.base = 0
 
-            a = get_arg(line, i0, pc[0])
-            b = get_arg(line, i1, pc[1])
-            c = get_arg_address(line, o, pc[2])
+        while self.i < len(self.instruction_list):
+            code = self.instruction_list[self.i]
+            # opcode
+            oc = int(code[-2:])
 
-            line[c] = str(a * b)
-
-            i += 4
-
-        elif oc == 3:
-            i0 = int(line[i+1])
-            # put input at i0
-            a = get_arg_address(line, i0, pc[0])
-            line[a] = str(input_setting)
-
-            i += 2
-    
-        elif oc == 4:
-            i0 = int(line[i+1])
-            # output i0
-            a = get_arg(line, i0, pc[0])
-
-            output = a
-            print(output)
-
-            i += 2
-
-        elif oc == 5:
-            i0, i1, o = [int(x) for x in line[(i+1):(i+4)]]
-            a = get_arg(line, i0, pc[0])
-            b = get_arg(line, i1, pc[1])
-
-            if a != 0:
-                i = b
+            # param code need to flip to left to right
+            if len(code[:-2]):
+                pc = '{:03d}'.format(int(code[:-2]))[::-1]
             else:
-                i += 3
+                pc = '000'
 
-        elif oc == 6:
-            i0, i1, o = [int(x) for x in line[(i+1):(i+4)]]
-            a = get_arg(line, i0, pc[0])
-            b = get_arg(line, i1, pc[1])
+            if oc == 99:
+                return self.output
 
-            if a == 0:
-                i = b
-            else:
-                i += 3
+            if oc == 1:
+                i0, i1, o = [int(x) for x in self.instruction_list[(self.i+1):(self.i+4)]]
 
-        elif oc == 7:
-            i0, i1, o = [int(x) for x in line[(i+1):(i+4)]]
-            a = get_arg(line, i0, pc[0])
-            b = get_arg(line, i1, pc[1])
-            c = get_arg_address(line, o, pc[2])
+                a = self.get_arg(i0, pc[0])
+                b = self.get_arg(i1, pc[1])
+                c = self.get_arg_address(o, pc[2])
 
-            if a < b :
-                line[c] = '1'
-            else:
-                line[c] = '0'
+                self.instruction_list[c] = str(a + b)
 
-            i += 4
+                self.i += 4
 
-        elif oc == 8:
-            i0, i1, o = [int(x) for x in line[(i+1):(i+4)]]
-            a = get_arg(line, i0, pc[0])
-            b = get_arg(line, i1, pc[1])
-            c = get_arg_address(line, o, pc[2])
+            elif oc == 2:
+                i0, i1, o = [int(x) for x in self.instruction_list[(self.i+1):(self.i+4)]]
 
-            if a == b:
-                line[c] = '1'
-            else:
-                line[c] = '0'
+                a = self.get_arg(i0, pc[0])
+                b = self.get_arg(i1, pc[1])
+                c = self.get_arg_address(o, pc[2])
 
-            i += 4
+                self.instruction_list[c] = str(a * b)
 
-        elif oc == 9:
-            i0 = int(line[i+1])
-            a = get_arg(line, i0, pc[0])
-            # put input at i0
-            base += a 
+                self.i += 4
 
-            i += 2
+            elif oc == 3:
+                i0 = int(self.instruction_list[self.i+1])
+                # put input at i0
+                a = self.get_arg_address(i0, pc[0])
+                self.instruction_list[a] = str(input_setting)
 
-    return output
+                self.i += 2
+        
+            elif oc == 4:
+                i0 = int(self.instruction_list[self.i+1])
+                # output i0
+                a = self.get_arg(i0, pc[0])
+
+                output = a
+                print(output)
+
+                self.i += 2
+
+            elif oc == 5:
+                i0, i1 = [int(x) for x in self.instruction_list[(self.i+1):(self.i+3)]]
+                a = self.get_arg(i0, pc[0])
+                b = self.get_arg(i1, pc[1])
+
+                if a != 0:
+                    self.i = b
+                else:
+                    self.i += 3
+
+            elif oc == 6:
+                i0, i1 = [int(x) for x in self.instruction_list[(self.i+1):(self.i+3)]]
+                a = self.get_arg(i0, pc[0])
+                b = self.get_arg(i1, pc[1])
+
+                if a == 0:
+                    self.i = b
+                else:
+                    self.i += 3
+
+            elif oc == 7:
+                i0, i1, o = [int(x) for x in self.instruction_list[(self.i+1):(self.i+4)]]
+                a = self.get_arg(i0, pc[0])
+                b = self.get_arg(i1, pc[1])
+                c = self.get_arg_address(o, pc[2])
+
+                if a < b :
+                    self.instruction_list[c] = '1'
+                else:
+                    self.instruction_list[c] = '0'
+
+                self.i += 4
+
+            elif oc == 8:
+                i0, i1, o = [int(x) for x in self.instruction_list[(self.i+1):(self.i+4)]]
+                a = self.get_arg(i0, pc[0])
+                b = self.get_arg(i1, pc[1])
+                c = self.get_arg_address(o, pc[2])
+
+                if a == b:
+                    self.instruction_list[c] = '1'
+                else:
+                    self.instruction_list[c] = '0'
+
+                self.i += 4
+
+            elif oc == 9:
+                i0 = int(self.instruction_list[self.i+1])
+                a = self.get_arg(i0, pc[0])
+                # put input at i0
+                self.base += a 
+
+                self.i += 2
+
+        return output
 
 if __name__ == '__main__':
     # with open('test2.txt', 'r') as f:
@@ -158,4 +163,5 @@ if __name__ == '__main__':
     line = line.split(',')
     # pad the program
     line.extend(['0']*1000)
-    run_program(line, 1)
+    program = Program(line)
+    program.run_program(1)
