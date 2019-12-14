@@ -2,12 +2,15 @@ import numpy as np
 import time
 import sys
 
-def print_map(outputs):
+def create_map(outputs):
     xv = outputs[0:-3:3]
     yv = outputs[1:-3:3]
     tiles = outputs[2:-3:3]
     m = np.zeros((max(yv)+1, max(xv)+1), np.int)
     m[yv, xv] = tiles 
+    return m
+
+def print_map(m):
     for r in m:
         for c in r:
             if c == 0:
@@ -107,10 +110,8 @@ class Program(object):
                 i0 = int(self.instruction_list[self.i+1])
                 # put input at i0
                 a = self.get_arg_address(i0, pc[0])
-                #self.instruction_list[a] = str(input_setting)
                 joy = yield
-                print(joy)
-                #self.instruction_list[a] = yield
+                self.instruction_list[a] = joy
 
                 self.i += 2
         
@@ -191,6 +192,7 @@ if __name__ == '__main__':
     tiles = []
     g = program.run(-1)
     outputs = next(g)
+    # ignoring the last because it's the score
     xv = outputs[0::3]
     yv = outputs[1::3]
     tiles = outputs[2::3]
@@ -201,25 +203,27 @@ if __name__ == '__main__':
     line[0] = '2'
     program = Program(line)
     g = program.run(0)
+    outputs = next(g)
+    m = create_map(outputs)
+    score = outputs[-1]
     while True:
-        outputs = next(g)
-        import pdb; pdb.set_trace()
-        print_map(outputs)
-        xv = outputs[0:-3:3]
-        yv = outputs[1:-3:3]
-        tiles = outputs[2:-3:3]
-
-        score = outputs[-1]
-        print('score: {}'.format(score))
+        #print_map(m)
 
         # ball position
-        xb , yb = [(x,y) for x, y, t in zip(xv, yv, tiles) if t ==4][0]
+        pb = np.argwhere(m == 4)
         # paddle position
-        xp , yp = [(x,y) for x, y, t in zip(xv, yv, tiles) if t ==3][0]
-        j = min(max(xb - xp, -1), 1)
+        #xp , yp = [(x,y) for x, y, t in zip(xv, yv, tiles) if t ==3][0]
+        pp = np.argwhere(m == 3)
+        j = min(max(pb[0,1] - pp[0,1], -1), 1)
 
-        g.send(j)
+        next(g) 
+        outputs = g.send(j)
+        if -1 in outputs:
+            score = outputs[outputs.index(-1) +2]
+            print('score: {}'.format(score))
 
+        xv = outputs[0::3]
+        yv = outputs[1::3]
+        tiles = outputs[2::3]
 
-    
-
+        m[yv, xv] = tiles 
