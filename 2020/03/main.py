@@ -11,16 +11,16 @@ def build_map(lines):
                 m[complex(x, y)] = 0
     return m
 
-def p1(m, w, h, dp=complex(3, 1)):
+def gen_p1(m, w, h, dp):
     p = complex(0, 0)
 
-    n = 0 
     while p.imag < h:
         p =  (p + dp)
         p = complex(p.real % w, p.imag)
-        if m[p]:
-            n+=1
-    return n
+        yield m[p]
+
+def p1(m, w, h, dp=complex(3, 1)):
+    return sum(t for t in gen_p1(m, w, h, dp))
 
 def p2(m, w, h):
     slopes = [complex(1, 1), complex(3, 1), complex(5, 1), complex(7, 1),
