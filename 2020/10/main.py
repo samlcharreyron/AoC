@@ -3,7 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import timeit
 import functools
-import collections
+import collections.abc
 
 def adaptor(data):
     return max(j for j in data) + 3
@@ -16,14 +16,13 @@ def p1(G):
 def p2(G, a):
     return sum(1 for _ in nx.all_simple_paths(G, 0, a))
 
-
 class memoized(object):
     def __init__(self, func):
         self.func = func
         self.cache = {}
 
     def __call__(self, *args):
-        if not isinstance(arg, collections.Hashable):
+        if not isinstance(args, collections.abc.Hashable):
             # uncacheable 
             return self.func(*args)
         if args in self.cache:
@@ -39,34 +38,18 @@ class memoized(object):
     def __get__(self, obj, objtype):
         return functools.partial(self.__call__, obj)
 
-Nt = dict()
-
+@memoized
 def N(G, c, a):
-    t = 0
 
     if c == a:
-        Nt[a] = 1
         return 1
 
     ns = list(nx.neighbors(G, c))
 
     if len(ns) == 1:
-        if ns[0] in Nt:
-            Nt[c] = Nt[ns[0]]
-            return Nt[c]
-        else:
-            return N(G, ns[0], a)
+        return N(G, ns[0], a)
     
-    ti = 0
-    for n in ns:
-        if n in Nt:
-            ti += Nt[n]
-        else:
-            ti += N(G, n, a)
-    Nt[c] = ti 
-    t += Nt[c]
-
-    return t
+    return sum(N(G, n, a) for n in ns)
 
 if __name__ == '__main__':
     with open('input.txt', 'r') as f:
