@@ -2,8 +2,7 @@ from collections import defaultdict
 import networkx as nx
 import matplotlib.pyplot as plt
 import timeit
-import functools
-import collections.abc
+from functools import cache
 
 def adaptor(data):
     return max(j for j in data) + 3
@@ -16,29 +15,7 @@ def p1(G):
 def p2(G, a):
     return sum(1 for _ in nx.all_simple_paths(G, 0, a))
 
-class memoized(object):
-    def __init__(self, func):
-        self.func = func
-        self.cache = {}
-
-    def __call__(self, *args):
-        if not isinstance(args, collections.abc.Hashable):
-            # uncacheable 
-            return self.func(*args)
-        if args in self.cache:
-            return self.cache[args]
-        else:
-            value = self.func(*args)
-            self.cache[args] = value
-            return value
-
-    def __repr__(self):
-        return self.func.__doc__
-
-    def __get__(self, obj, objtype):
-        return functools.partial(self.__call__, obj)
-
-@memoized
+@cache
 def N(G, c, a):
 
     if c == a:
@@ -48,8 +25,8 @@ def N(G, c, a):
 
     if len(ns) == 1:
         return N(G, ns[0], a)
-    
-    return sum(N(G, n, a) for n in ns)
+    else:
+        return sum(N(G, n, a) for n in ns)
 
 if __name__ == '__main__':
     with open('input.txt', 'r') as f:
@@ -65,7 +42,6 @@ if __name__ == '__main__':
     while s:
         c = s.pop()
         ns = [c+i for i in range(1, 4)]
-        #d[c] |= set(n for n in ns if n in data)
         e = [(c, n) for n in ns if n in data]
         G.add_edges_from(e)
         s |= set(n for _, n in e)
