@@ -1,34 +1,53 @@
 import time
+from dataclasses import dataclass
 
+@dataclass
 class Number:
-    def __init__(self, i, j, n):
-        self.i = i
-        self.n = n
-        self.j = j
-
-    def __repr__(self):
-        return 'i: {}, j: {}, n: {}'.format(self.i, self.j, self.n)
+    i: int
+    j: int
 
 def p(data, l):
     d = dict()
     i = 1
     for n in data:
-        d[n] = Number(i, 0, 1)
+        d[n] = Number(i, 0)
         i += 1
 
     tick = time.time()
     for i in range(len(data) + 1, l):
-        if d[n].n == 1:
+        if d[n].j == 0:
             n = 0
         else:
             n = d[n].i - d[n].j
 
         if n not in d:
-            d[n] = Number(i, 0, 1)
+            d[n] = Number(i, 0)
         else:
             d[n].j = d[n].i
             d[n].i = i
-            d[n].n += 1 
+            #d[n].n += 1 
+    
+    return n
+
+def p_(data, l):
+    d = dict()
+    i = 1
+    for n in data:
+        d[n] = (i, 0)
+        i += 1
+
+    tick = time.time()
+    for i in range(len(data) + 1, l):
+        dni, dnj = d[n]
+        if dni == 0:
+            n = 0
+        else:
+            n = dni - dnj
+
+        if n not in d:
+            d[n] = (i, 0)
+        else:
+            d[n] = (i, dni)
     
     return n
 
@@ -41,8 +60,6 @@ if __name__ == '__main__':
     print(n, ' in ', tock - tick, ' s' )
 
     tick = time.time()
-    n = p(data, 30000001)
+    n = p_(data, 30000001)
     tock = time.time()
     print(n, ' in ', tock - tick, ' s' )
-
-
