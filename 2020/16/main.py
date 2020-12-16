@@ -1,19 +1,9 @@
 import re
-from dataclasses import dataclass
 from collections import namedtuple
-import numpy as np
 from functools import reduce
 import operator
 
 Field = namedtuple('Field', ['f', 'l1', 'u1', 'l2', 'u2'])
-
-#@dataclass
-#class Field:
-#    f: str
-#    l1: int
-#    u1: int
-#    l2: int
-#    u2: int
 
 def p1(data):
     conds, tkt, ntix = data.split('\n\n')
@@ -48,13 +38,13 @@ def p2(data):
     invalid = set(i for i, t in enumerate(nts) for tv in t for f in fields if all(not check(f, tv) for f in fields))
     valid = [t for i, t in enumerate(nts) if i not in invalid]
     valid.append(mt)
+    validt = [[c for c in r] for r in valid]
 
     N = len(fields)
-    valid = np.array(valid)
     field_names = set(f.f for f in fields)
     can_be = [field_names.copy() for _ in range(N)]
-    for i in range(N):
-        for tv in valid[:,i]:
+    for t in valid:
+        for i, tv in enumerate(t):
             can_be[i] -= set(f.f for f in fields if not check(f, tv))
     
     while any(len(can_be[i]) > 1 for i in range(N)):
