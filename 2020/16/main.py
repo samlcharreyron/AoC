@@ -48,15 +48,13 @@ def p2(data):
             can_be[i] -= set(f.f for f in fields if not check(f, tv))
     
     while any(len(can_be[i]) > 1 for i in range(N)):
-        remove = dict()
-        for i in range(N):
-            if len(can_be[i]) == 1:
-                remove[i] = can_be[i]
+        remove = {i: cb for i, cb in enumerate(can_be) if len(cb) == 1}
 
-        for k, v in remove.items():
-            for i in range(N):
+        for i in range(N):
+            for k, v in remove.items():
                 if i != k:
-                    can_be[i] -= v
+                    can_be[i] -= remove[k]
+
     vals = [v for f,v in zip(can_be, mt) if 'departure' in f.pop()]
     return reduce(operator.mul, vals, 1)
 
