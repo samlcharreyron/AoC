@@ -1,4 +1,8 @@
-def f(sub):
+import operator
+from functools import reduce
+import time
+
+def f_(sub):
     r = int(sub[-1])
     o = sub[-2]
 
@@ -12,31 +16,55 @@ def f(sub):
             return r + f(sub[:-2])
         else:
             return r * f(sub[:-2])
+def f(sub):
+    ops = {'+': operator.add, '*': operator.mul}
+    ol = sub[1::2]
+    al = (int(a) for a in sub[0::2])
+    it = iter(al)
+    val = next(it)
 
-def evalu(data):
-    while '(' in data:
+    for o, a in zip(ol, it):
+        val = ops[o](val, a)
+    return val
+
+def f2(line):
+    ac = []
+    for sub in line.split('*'):
+        ac.append(sum(int(a) for a in sub.split('+')))
+    return reduce(operator.mul, ac)
+
+def evalu(line, p1=True):
+    while '(' in line:
         s = []
         subs = []
         t = 0
-        for i, c in enumerate(data):
+        for i, c in enumerate(line):
             if c == '(':
                 s.append(i)
             elif c == ')':
                 b = s.pop()
                 subs.append((b, i))
 
-        data_ = data
+        line_ = line
         for s, e in subs:
-            sub = data[s+1:e].split() 
-            if '(' not in ''.join(sub):
-                data_ = data_.replace(data[s:e+1], '{}'.format(f(sub)))
-        data = data_
-    return f(data.split())
+            sub = line[s+1:e]
+            if '(' not in sub:
+                if p1:
+                    line_ = line_.replace(line[s:e+1], '{}'.format(f(sub.split())))
+                else:
+                    line_ = line_.replace(line[s:e+1], '{}'.format(f2(sub)))
+        line = line_
+    if p1:
+        return f(line.split())
+    else:
+        return f2(line)
 
 if __name__ == '__main__':
-    #data = '1 + 2 * 3 + 4 * 5 + 6'
-    #data = '2 * 3 + (4 * 5)'
-    #data = '((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2'
     with open('input.txt', 'r') as fe:
         data = fe.read().splitlines()
-    print(sum(evalu(line) for line in data))
+    tick = time.time()
+    print(sum(evalu(line, p1=True) for line in data))
+    tock = time.time()
+    print('elapsed ', tock - tick)
+
+    print(sum(evalu(line, p1=False) for line in data))
