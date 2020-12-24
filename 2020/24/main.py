@@ -47,26 +47,36 @@ def p2(lines):
 
         grid[p] = not grid[p]
 
+    g_numb = defaultdict(int)
+
+    to_visit = set(grid.keys())
+    for p in to_visit.copy():
+        nbrs = set(tuple(a+b for a, b in zip(p, dp)) for dp in dirs.values())
+        to_visit |= nbrs
+
+    for p in to_visit:
+        nbrs = [tuple(a+b for a, b in zip(p, dp)) for dp in dirs.values()]
+        num_b = sum(grid[nb] for nb in nbrs)
+        g_numb[p] = num_b
+
+    print(g_numb)
+
     for i in range(1, 101):
         to_flip = set()
-        to_visit = set(grid.keys())
-        for p in to_visit.copy():
-            nbrs = set(tuple(a+b for a, b in zip(p, dp)) for dp in dirs.values())
-            to_visit |= nbrs
-
-        for p in to_visit:
-            nbrs = [tuple(a+b for a, b in zip(p, dp)) for dp in dirs.values()]
-            if grid[p]:
-                num_b = sum(grid[nb] for nb in nbrs)
-                if num_b == 0 or num_b > 2:
-                    to_flip.add(p)
-            else:
-                num_b = sum(grid[nb] for nb in nbrs)
-                if num_b == 2:
-                    to_flip.add(p)
+        for p, num_b in g_numb.items():
+            if grid[p] and (num_b == 0 or num_b > 2):
+                to_flip.add(p)
+            elif not grid[p] and num_b == 2:
+                to_flip.add(p)
 
         for p in to_flip:
             grid[p] = not grid[p]
+            nbrs = [tuple(a+b for a, b in zip(p, dp)) for dp in dirs.values()]
+            for nb in nbrs:
+                if grid[p]:
+                    g_numb[nb] += 1
+                else:
+                    g_numb[nb] -= 1
 
         print('Day ', i, sum(v for v in grid.values()))
 
