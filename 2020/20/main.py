@@ -4,7 +4,27 @@ from collections import defaultdict
 from functools import reduce
 import operator
 
-#Tile = NamedTupe('Tile', ['lb', 'rb', 'tb', 'bb'])
+moves = {
+        ('l', 'l', True) : [['R180', 'FTB'], ['FLR']],
+        ('l', 'r', True) : [[]],
+        ('l', 't', True) : [['R90']],
+        ('l', 'b', True) : [['R90', 'FLR'], ['R-90', 'FTB']],
+        ('r', 'r', True) : [['FLR'], ['R180', 'FTB']],
+        ('r', 't', True) : [['R-90', 'FTB'], ['R90', 'FLR']],
+        ('r', 'b', True) : [['R-90']],
+        ('t', 'b', True) : [[]],
+        ('t', 't', True) : [['R180', 'FLR'], ['FTB']],
+        ('b', 'b', True) : [['R180', 'FLR'], ['FTB']],
+        ('l', 'l', False) : [['R180'], ['FLR', 'FTB']],
+        ('l', 'r', False) : [['R180', 'FLR'], ['FTB']],
+        ('l', 't', False) : [['R-90', 'FLR'], ['R90', 'FTB']],
+        ('l', 'b', False) : [['R-90']],
+        ('r', 'r', False) : [['R180'], ['FLR', 'FTB']],
+        ('r', 't', False) : [['R90']],
+        ('r', 'b', False) : [['R90', 'FTB'], ['R-90', 'FLR']],
+        ('t', 'b', False) : [['FLR'], ['R180', 'FTB']],
+        ('t', 't', False) : [['R180'], ['FLR', 'FTB']],
+        ('b', 'b', False) : [['R180'], ['FLR', 'FTB']] }
 
 @dataclass
 class Tile:
@@ -14,11 +34,10 @@ class Tile:
     bb: tuple
 
     def __init__(self):
-        self.n = (-1, 'n')
-        self.lb = (-1, 'n')
-        self.rb = (-1, 'n')
-        self.tb = (-1, 'n')
-        self.bb = (-1, 'n')
+        self.lb = (-1, 'n', False)
+        self.rb = (-1, 'n', False)
+        self.tb = (-1, 'n', False)
+        self.bb = (-1, 'n', False)
 
 if __name__ == '__main__':
     #d = dict()
@@ -30,9 +49,10 @@ if __name__ == '__main__':
     tnrs = []
     tnts = []
     tnbs = []
-    d = defaultdict(Tile)
+    #d = defaultdict(Tile)
+    d = defaultdict(list)
 
-    with open('input.txt', 'r') as f:
+    with open('test.txt', 'r') as f:
        data = f.read().split('\n\n') 
 
        for t in data:
@@ -56,52 +76,52 @@ if __name__ == '__main__':
             idx = lbs.index(b)
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].lb = (tnb, 'l')
-            d[tnb].lb = (tna, 'l')
+            d[tna].lb = (tnb, 'l', False)
+            d[tnb].lb = (tna, 'l', False)
         elif b in rbs:
             idx = rbs.index(b)
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].lb = (tnb, 'r')
-            d[tnb].rb = (tna, 'l')
+            d[tna].lb = (tnb, 'r', False)
+            d[tnb].rb = (tna, 'l', False)
         elif b in tbs:
             idx = tbs.index(b)
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].lb = (tnb, 't')
-            d[tnb].tb = (tna, 'l')
+            d[tna].lb = (tnb, 't', False)
+            d[tnb].tb = (tna, 'l', False)
         elif b in bbs:
             idx = bbs.index(b)
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].lb = (tnb, 'b')
-            d[tnb].bb = (tna, 'l')
+            d[tna].lb = (tnb, 'b', False)
+            d[tnb].bb = (tna, 'l', False)
         elif b[::-1] in lbs:
             idx = lbs.index(b[::-1])
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].lb = (tnb, 'l')
-            d[tnb].lb = (tna, 'l')
+            d[tna].lb = (tnb, 'l', True)
+            d[tnb].lb = (tna, 'l', True)
         elif b[::-1] in rbs:
             idx = rbs.index(b[::-1])
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].lb = (tnb, 'r')
-            d[tnb].rb = (tna, 'l')
+            d[tna].lb = (tnb, 'r', True)
+            d[tnb].rb = (tna, 'l', True)
         elif b[::-1] in tbs:
             idx = tbs.index(b[::-1])
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].lb = (tnb, 't')
-            d[tnb].tb = (tna, 'l')
+            d[tna].lb = (tnb, 't', True)
+            d[tnb].tb = (tna, 'l', True)
         elif b[::-1] in bbs:
             idx = bbs.index(b[::-1])
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].lb = (tnb, 'b')
-            d[tnb].bb = (tna, 'l')
+            d[tna].lb = (tnb, 'b', True)
+            d[tnb].bb = (tna, 'l', True)
         else:
-            d[tna].lb = (-1, 'n')
+            d[tna].lb = (-1, 'n', False)
 
     while rbs:
         b = rbs.pop()
@@ -110,52 +130,52 @@ if __name__ == '__main__':
             idx = lbs.index(b)
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].rb = (tnb, 'l')
-            d[tnb].lb = (tna, 'r')
+            d[tna].rb = (tnb, 'l', False)
+            d[tnb].lb = (tna, 'r', False)
         elif b in rbs:
             idx = rbs.index(b)
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].rb = (tnb, 'r')
-            d[tnb].rb = (tna, 'r')
+            d[tna].rb = (tnb, 'r', False)
+            d[tnb].rb = (tna, 'r', False)
         elif b in tbs:
             idx = tbs.index(b)
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].rb = (tnb, 't')
-            d[tnb].tb = (tna, 'r')
+            d[tna].rb = (tnb, 't', False)
+            d[tnb].tb = (tna, 'r', False)
         elif b in bbs:
             idx = bbs.index(b)
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].rb = (tnb, 'b')
-            d[tnb].bb = (tna, 'r')
+            d[tna].rb = (tnb, 'b', False)
+            d[tnb].bb = (tna, 'r', False)
         elif b[::-1] in lbs:
             idx = lbs.index(b[::-1])
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].rb = (tnb, 'l')
-            d[tnb].lb = (tna, 'r')
+            d[tna].rb = (tnb, 'l', True)
+            d[tnb].lb = (tna, 'r', True)
         elif b[::-1] in rbs:
             idx = rbs.index(b[::-1])
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].rb = (tnb, 'r')
-            d[tnb].rb = (tna, 'r')
+            d[tna].rb = (tnb, 'r', True)
+            d[tnb].rb = (tna, 'r', True)
         elif b[::-1] in tbs:
             idx = tbs.index(b[::-1])
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].rb = (tnb, 't')
-            d[tnb].tb = (tna, 'r')
+            d[tna].rb = (tnb, 't', True)
+            d[tnb].tb = (tna, 'r', True)
         elif b[::-1] in bbs:
             idx = bbs.index(b[::-1])
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].rb = (tnb, 'b')
-            d[tnb].bb = (tna, 'r')
+            d[tna].rb = (tnb, 'b', True)
+            d[tnb].bb = (tna, 'r', True)
         else:
-            d[tna].rb = (-1, 'n')
+            d[tna].rb = (-1, 'n', False)
 
     while tbs:
         b = tbs.pop()
@@ -164,52 +184,52 @@ if __name__ == '__main__':
             idx = lbs.index(b)
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].tb = (tnb, 'l')
-            d[tnb].lb = (tna, 't')
+            d[tna].tb = (tnb, 'l', False)
+            d[tnb].lb = (tna, 't', False)
         elif b in rbs:
             idx = rbs.index(b)
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].tb = (tnb, 'r')
-            d[tnb].rb = (tna, 't')
+            d[tna].tb = (tnb, 'r', False)
+            d[tnb].rb = (tna, 't', False)
         elif b in tbs:
             idx = tbs.index(b)
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].tb = (tnb, 't')
-            d[tnb].tb = (tna, 't')
+            d[tna].tb = (tnb, 't', False)
+            d[tnb].tb = (tna, 't', False)
         elif b in bbs:
             idx = bbs.index(b)
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].tb = (tnb, 'b')
-            d[tnb].bb = (tna, 't')
+            d[tna].tb = (tnb, 'b', False)
+            d[tnb].bb = (tna, 't', False)
         elif b[::-1] in lbs:
             idx = lbs.index(b[::-1])
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].tb = (tnb, 'l')
-            d[tnb].lb = (tna, 't')
+            d[tna].tb = (tnb, 'l', True)
+            d[tnb].lb = (tna, 't', True)
         elif b[::-1] in rbs:
             idx = rbs.index(b[::-1])
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].tb = (tnb, 'r')
-            d[tnb].rb = (tna, 't')
+            d[tna].tb = (tnb, 'r', True)
+            d[tnb].rb = (tna, 't', True)
         elif b[::-1] in tbs:
             idx = tbs.index(b[::-1])
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].tb = (tnb, 't')
-            d[tnb].tb = (tna, 't')
+            d[tna].tb = (tnb, 't', True)
+            d[tnb].tb = (tna, 't', True)
         elif b[::-1] in bbs:
             idx = bbs.index(b[::-1])
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].tb = (tnb, 'b')
-            d[tnb].bb = (tna, 't')
+            d[tna].tb = (tnb, 'b', True)
+            d[tnb].bb = (tna, 't', True)
         else:
-            d[tna].tb = (-1, 'n')
+            d[tna].tb = (-1, 'n', False)
 
     while bbs:
         b = bbs.pop()
@@ -218,57 +238,65 @@ if __name__ == '__main__':
             idx = lbs.index(b)
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].bb = (tnb, 'l')
-            d[tnb].lb = (tna, 'b')
+            d[tna].bb = (tnb, 'l', False)
+            d[tnb].lb = (tna, 'b', False)
         elif b in rbs:
             idx = rbs.index(b)
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].bb = (tnb, 'r')
-            d[tnb].rb = (tna, 'b')
+            d[tna].bb = (tnb, 'r', False)
+            d[tnb].rb = (tna, 'b', False)
         elif b in tbs:
             idx = tbs.index(b)
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].bb = (tnb, 't')
-            d[tnb].tb = (tna, 'b')
+            d[tna].bb = (tnb, 't', False)
+            d[tnb].tb = (tna, 'b', False)
         elif b in bbs:
             idx = bbs.index(b)
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].bb = (tnb, 'b')
-            d[tnb].bb = (tna, 'b')
+            d[tna].bb = (tnb, 'b', False)
+            d[tnb].bb = (tna, 'b', False)
         elif b[::-1] in lbs:
             idx = lbs.index(b[::-1])
             lbs.pop(idx)
             tnb = tnls.pop(idx)
-            d[tna].bb = (tnb, 'l')
-            d[tnb].lb = (tna, 'b')
+            d[tna].bb = (tnb, 'l', True)
+            d[tnb].lb = (tna, 'b', True)
         elif b[::-1] in rbs:
             idx = rbs.index(b[::-1])
             rbs.pop(idx)
             tnb = tnrs.pop(idx)
-            d[tna].bb = (tnb, 'r')
-            d[tnb].rb = (tna, 'b')
+            d[tna].bb = (tnb, 'r', True)
+            d[tnb].rb = (tna, 'b', True)
         elif b[::-1] in tbs:
             idx = tbs.index(b[::-1])
             tbs.pop(idx)
             tnb = tnts.pop(idx)
-            d[tna].bb = (tnb, 't')
-            d[tnb].tb = (tna, 'b')
+            d[tna].bb = (tnb, 't', True)
+            d[tnb].tb = (tna, 'b', True)
         elif b[::-1] in bbs:
             idx = bbs.index(b[::-1])
             bbs.pop(idx)
             tnb = tnbs.pop(idx)
-            d[tna].bb = (tnb, 'b')
-            d[tnb].bb = (tna, 'b')
+            d[tna].bb = (tnb, 'b', True)
+            d[tnb].bb = (tna, 'b', True)
         else:
-            d[tna].bb = (-1, 'n')
-    
-    num_outer = lambda t: sum( x == (-1, 'n') for x in [t.lb, t.rb, t.tb, t.bb])
-    corners = [k for k, t in d.items() if num_outer(t) > 1]
+            d[tna].bb = (-1, 'n', False)
 
-    assert(len(corners) == 4)
+    num_outer = lambda t: sum( x == (-1, 'n', False) for x in [t.lb, t.rb, t.tb, t.bb])
+    corners = [k for k, t in d.items() if num_outer(t) > 1]
     
     print(corners)
     print(reduce(operator.mul, corners))
+
+    to_visit = set(corners)
+
+    while to_visit:
+        t = to_visit.pop()
+
+    for t in d:
+        print(t, d[t])
+        #if d[t].lb == (-1, 'n') and d[t].tb == (-1, 'n ):
+        #    print('top left ', t)
