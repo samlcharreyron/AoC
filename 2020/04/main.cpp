@@ -1,17 +1,17 @@
 #include <fstream>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <regex>
 #include <sstream>
 #include <string>
-#include <vector>
+#include <unordered_set>
 
 using namespace std;
 
-const vector<string> required_fields = {"byr", "iyr", "eyr", "hgt",
+const unordered_set<string> required_fields = {"byr", "iyr", "eyr", "hgt",
                                         "hcl", "ecl", "pid"};
 
-bool hasRequiredFields(const map<string, string>& fields) {
+bool hasRequiredFields(const unordered_map<string, string>& fields) {
     for (const auto r : required_fields) {
         if (fields.count(r) == 0) {
             return false;
@@ -21,7 +21,7 @@ bool hasRequiredFields(const map<string, string>& fields) {
     return true;
 }
 
-bool validateFields(const map<string, string>& fields) {
+bool validateFields(const unordered_map<string, string>& fields) {
     for (const auto f : fields) {
         if (f.first == "byr") {
             if (f.second.size() != 4 || stoi(f.second) < 1920 ||
@@ -59,7 +59,7 @@ bool validateFields(const map<string, string>& fields) {
         }
 
         else if (f.first == "ecl") {
-            const vector<string> available = {"amb", "blu", "brn", "gry",
+            const unordered_set<string> available = {"amb", "blu", "brn", "gry",
                                               "grn", "hzl", "oth"};
             if (count(available.cbegin(), available.cend(), f.second) == 0) {
                 return false;
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     int num_valid_1 = 0;
     int num_valid_2 = 0;
     while (ifs.good()) {
-        map<string, string> fields;
+        unordered_map<string, string> fields;
         string str;
         while (getline(ifs, str)) {
             if (str.empty()) break;

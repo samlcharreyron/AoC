@@ -62,6 +62,17 @@ def p2(data):
 
     return sum(e.v * e.n for e in mem.values())
 
+def get_addresses(ab):
+    idxs = [i for i, c in enumerate(ab) if c == 'X']
+    nx = len(idxs)
+    ad_l = []
+    abl = list(ab)
+    for c in product('01', repeat=nx):
+        for ix, b in zip(idxs, c):
+            abl[ix] = b
+        ad_l.append(''.join(abl))
+    return ad_l
+
 def p2_(data):
     mem = dict()
     for p in data.split('mask = ')[1:]:
@@ -82,4 +93,4 @@ if __name__ == '__main__':
     with open('input.txt', 'r') as f:
         data = f.read().strip()
         print(p1(data))
-        print(p2_(data))
+        print(p2(data))

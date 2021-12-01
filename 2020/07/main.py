@@ -1,17 +1,7 @@
 from collections import defaultdict
 
-def find_children(d, n):
-    s = set(c for c,_ in d[n])
-    children = set(c for c,_ in d[n])
-    while s:
-        c = s.pop()
-        for k, q in d[c]:
-            children.add(k)
-            s.add(k)
-    return children
-
-def find_children_r(d, n, q=0):
-    #import pdb; pdb.set_trace()
+def find_children_r(d, n):
+    q = 0
     ch = frozenset(c for c in d[n])
     if not ch:
         return frozenset(), 0
@@ -22,8 +12,12 @@ def find_children_r(d, n, q=0):
             q += k + k * qn
         return ch, q
 
+def f1(c, d, t='shiny gold'):
+    print('d len ' ,len(d))
+    return any(e==t or f1(e, d, t) for e, _ in d[c])
+
 if __name__ == '__main__':
-    with open('input.txt', 'r') as f:
+    with open('test.txt', 'r') as f:
         data = f.read().strip()
 
         sentences = data.split('.')[:-1]
@@ -37,9 +31,18 @@ if __name__ == '__main__':
                 if q != 'no':
                     c = x.split(q)[1].strip().split('bag')[0]
                     d[k].add((c.strip(), int(q)))
-        #print(d)
-        #print(find_children_r(d, 'light red'))
-        #print(sum(('shiny gold' in find_children_r(d.copy(), k)[0] for k in d.keys())))
-        print(find_children_r(d.copy(), 'shiny gold'))
-        #print(find_children_r(d.copy(), 'faded blue'))
-        #print(find_children_r(d.copy(), 'dark olive'))
+                else:
+                    d[k].add(('', 0))
+
+        print(len(d))
+        f1_ = lambda x: f1(x, d, 'shiny gold')
+        print(sum(map(f1_, d.copy())))
+
+        #s = 0
+        #for k in d.keys():
+        #    for c, _ in find_children_r(d.copy(), k)[0]:
+        #        if 'shiny gold' in c:
+        #            s += 1
+        #print(s)
+
+        #print(find_children_r(d, 'shiny gold')[1])

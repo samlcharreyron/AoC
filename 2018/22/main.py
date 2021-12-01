@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from collections import namedtuple
 import networkx as nx
+import time
 
 global target, depth, e, g
 
@@ -48,7 +49,6 @@ if __name__ == '__main__':
             c[x,y] = e[x, y] % 3
 
     # problem 1
-    print c[target[0], target[1]]
     print(np.sum(c[0:(target[0] + 1), 0:(target[1] + 1)]))
 
     # problem 2
@@ -89,5 +89,12 @@ if __name__ == '__main__':
                     G.add_edge(current, n, weight=1)
 
     #print(nx.shortest_path_length(G, start, end))
+    tick = time.time()
     print(nx.dijkstra_path_length(G, start, end))
+    tock = time.time()
+    print('dijkstra elapsed %f s' % (tock - tick))
+    tick = time.time()
+    print(nx.astar_path_length(G, start, end, lambda a, b: abs(a.pos[0] - b.pos[0]) + abs(a.pos[1] - b.pos[1]))) 
+    tock = time.time()
+    print('a start elapsed %f s' % (tock - tick))
     #print(nx.shortest_path(G, start, end))
