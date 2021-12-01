@@ -26,19 +26,14 @@ void part2() {
   vector<int> v;
   transform(istream_iterator<string>(ifs), istream_iterator<string>(), back_inserter(v), [](const auto &s) {return std::stoi(s);});
 
-  auto it1 = v.begin();
-  auto it2 = it1 + 1;
-  auto it3 = it2 + 1;
+  auto it0 = v.begin();
+  auto it3 = it0 + 3;
 
-  vector<int> o;
-  for(; it3 != v.end(); it1++, it2++, it3++) {
-    o.push_back(*it1 + *it2 + *it3);
+  int res = 0;
+  for(; it3 != v.end(); it0++, it3++) {
+    if (*it3 > *it0) 
+      res++;
   }
-
-  vector<int> adj(o.size());
-  adjacent_difference(begin(o), end(o), adj.begin());
-
-  int res = count_if(adj.begin() + 1, end(adj), [](const int x) { return x > 0; });
 
   cout << res << endl;
 
