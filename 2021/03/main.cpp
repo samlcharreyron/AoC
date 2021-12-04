@@ -18,12 +18,8 @@ void part1() {
             back_inserter(v), [](const string& s) { return bitset<N>(s); });
 
   vector<size_t> nums(N, 0);
-  for (auto bs : v) {
-    for (int b = 0; b < N; b++) {
-      if (bs[b]) {
-        nums[b]++;
-      }
-    }
+  for (int b=0; b < N; b++) {
+    nums[b] = count_if(begin(v), end(v), [b] (auto bs) { return bs[b]; });
   }
 
   bitset<N> r;
@@ -51,11 +47,10 @@ unsigned long get_ox() {
             back_inserter(v), [](const string& s) { return bitset<N>(s); });
 
   int b = N - 1;
-  vector<size_t> nums(N);
   while (v.size() > 1) {
-    nums[b] = count_if(begin(v), end(v), [b](const auto bs) { return bs[b]; });
+    int nums = count_if(begin(v), end(v), [b](const auto bs) { return bs[b]; });
 
-    bool mc = nums[b] >= double(v.size()) / 2;
+    bool mc = nums >= double(v.size()) / 2;
 
     auto it = remove_if(begin(v), end(v), [mc, b](const auto bs) { return bs[b] ^ mc ; });
     v.erase(it, v.end());
@@ -75,11 +70,10 @@ unsigned long get_co2() {
             back_inserter(v), [](const string& s) { return bitset<N>(s); });
 
   int b = N - 1;
-  vector<size_t> nums(N);
   while (v.size() > 1) {
-    nums[b] = count_if(begin(v), end(v), [b](const auto bs) { return bs[b]; });
+    int nums = count_if(begin(v), end(v), [b](const auto bs) { return bs[b]; });
 
-    bool mc = nums[b] < double(v.size()) / 2;
+    bool mc = nums < double(v.size()) / 2;
 
     auto it = remove_if(begin(v), end(v), [mc, b](const auto bs) { return bs[b] ^ mc ; });
     v.erase(it, v.end());
@@ -97,6 +91,7 @@ void part2() {
 }
 
 int main() {
+  part1();
   part2();
   return 0;
 }
