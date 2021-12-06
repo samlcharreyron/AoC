@@ -63,11 +63,11 @@ public:
 };
 
 class Part2 {
-  unordered_map<pair<int, int>, int, pairhash> cache_;
+  unordered_map<pair<size_t, size_t>, size_t, pairhash> cache_;
 
   public:
 
-  int spawn(int age, int days) {
+  size_t spawn(size_t age, size_t days) {
     auto it = cache_.find(make_pair(age, days));
 
     if (it != cache_.end()) {
@@ -79,11 +79,11 @@ class Part2 {
       return 1;
     }
 
-    int num_spawns = (days - age) / 7 + 1;
+    size_t num_spawns = (days - age) / 7 + 1;
 
-    int num_child = 1;
+    size_t num_child = 1;
     for (int i=0; i < num_spawns; i++) {
-      int spawn_time = age + i * 7 + 1;
+      size_t spawn_time = age + i * 7 + 1;
       if (spawn_time <= days)
         num_child += spawn(8, days -  spawn_time);
     }
@@ -94,7 +94,7 @@ class Part2 {
   }
 
   void operator()() {
-    ifstream ifs("test.txt");
+    ifstream ifs("input.txt");
 
     string line;
     vector<int> ages;
@@ -103,7 +103,13 @@ class Part2 {
     }
 
     constexpr int days = 256;
-    int num_child = accumulate(ages.begin(), ages.end(), 0, [this](const auto a, const auto b) { return a + this->spawn(b, days); });
+    //cout << spawn(4, days) << endl;
+    //size_t num_child = accumulate(ages.begin(), ages.end(), 0, [this](const auto a, const auto b) { return a + this->spawn(b, days); });
+    
+    size_t num_child = 0;
+    for (auto age : ages) {
+      num_child += spawn(age, days);
+    }
     cout << num_child << endl;
   }
 
