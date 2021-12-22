@@ -9,19 +9,10 @@ using namespace std;
 
 using Image = vector<string>;
 
+static constexpr int pad = 52;
+
 void enhance(const string& code, Image& img, const int num=2) {
-  constexpr int pad = 8;
   for (int k=0; k < num; k++) {
-    // pad image by 2
-    for (auto& line : img) {
-      line.insert(line.begin(), pad, '.');
-      line.insert(line.end(), pad, '.');
-    }
-
-    string new_line(img[0].size(), '.');
-    img.insert(img.begin(), pad, new_line);
-    img.insert(img.end(), pad, new_line);
-
     Image img_new(img);
 
     for (int i=1; i < img.size()-1; i++) {
@@ -62,13 +53,61 @@ void part1() {
     img.push_back(line);
   }
 
-  enhance(code, img, 2);
 
-  for (auto line : img) {
-    cout << line << endl;
+  // pad image by 2
+  for (auto& line : img) {
+    line.insert(line.begin(), pad, '.');
+    line.insert(line.end(), pad, '.');
   }
 
-  constexpr int skip = 10;
+  string new_line(img[0].size(), '.');
+  img.insert(img.begin(), pad, new_line);
+  img.insert(img.end(), pad, new_line);
+
+  enhance(code, img, 2);
+
+  //for (auto line : img) {
+  //  cout << line << endl;
+  //}
+
+  constexpr int skip = 2;
+  size_t ret = accumulate(img.begin()+skip, img.end()-skip, 0, [](size_t lhs, auto& line) {
+    return lhs + count(line.begin()+skip, line.end()-skip, '#');});
+
+  cout << ret << endl;
+
+}
+
+void part2() {
+  ifstream ifs("input.txt");
+
+  string code;
+  getline(ifs, code);
+
+  string line;
+  // empty line
+  getline(ifs, line);
+
+  Image img;
+  while(getline(ifs, line)) {
+    img.push_back(line);
+  }
+
+  for (auto& line : img) {
+    line.insert(line.begin(), pad, '.');
+    line.insert(line.end(), pad, '.');
+  }
+
+  string new_line(img[0].size(), '.');
+  img.insert(img.begin(), pad, new_line);
+  img.insert(img.end(), pad, new_line);
+
+  enhance(code, img, 50);
+  // for (auto line : img) {
+  //   cout << line << endl;
+  // }
+
+  static constexpr int skip = 0;
   size_t ret = accumulate(img.begin()+skip, img.end()-skip, 0, [](size_t lhs, auto& line) {
     return lhs + count(line.begin()+skip, line.end()-skip, '#');});
 
@@ -79,5 +118,6 @@ void part1() {
 
 int main() {
   part1();
+  part2();
   return 0;
 }

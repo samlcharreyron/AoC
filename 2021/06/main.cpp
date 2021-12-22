@@ -93,7 +93,7 @@ class Part2 {
     return  num_child;
   }
 
-  void operator()() {
+  void operator()(const int days) {
     ifstream ifs("input.txt");
 
     string line;
@@ -102,7 +102,6 @@ class Part2 {
       ages.push_back(stoi(line));
     }
 
-    constexpr int days = 256;
     //cout << spawn(4, days) << endl;
     //size_t num_child = accumulate(ages.begin(), ages.end(), 0, [this](const auto a, const auto b) { return a + this->spawn(b, days); });
     
@@ -117,7 +116,7 @@ class Part2 {
 
 
 int main() {
-  part1();
-  Part2{}();
+  Part2{}(80);
+  Part2{}(256);
   return 0;
 }

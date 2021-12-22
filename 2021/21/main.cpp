@@ -78,15 +78,12 @@ struct DFS {
     size_t n1 = 0;
     size_t n2 = 0;
     for (int r=0; r < 27; r++) {
-      //positions_[p] = 1 + (positions[p] + ConstArray().rolls[r] - 1) % 10;
       int p1_new = 1 + (p1 + getRolls()[r] - 1) % 10;
       int s1_new = s1 + p1_new;
 
       auto nums_d = dfs(p2, p1_new, s2, s1_new);
       n1 += nums_d[1];
       n2 += nums_d[0];
-      //transform(nums.begin(), nums.end(), nums_d.begin(), nums.begin(), 
-      //std::plus<int>());
 
     }
 
