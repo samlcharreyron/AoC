@@ -105,12 +105,10 @@ void part2() {
 
   Visited visited;
   cout << dfs("start", nodes, visited, 2) << endl;
-
-  //cout << dfs("start", nodes, visited, 2) << endl;
 }
 
 int main() {
-  //part1();
+  part1();
   part2();
   return 0;
 }
