@@ -10,6 +10,50 @@
 
 using namespace std;
 
+void part1(vector<vector<char>> v, const vector<tuple<int, int, int>>& moves, const int crates=10) {
+  for (const auto& m : moves) {
+    int num, from, to;
+    tie(num, from, to) = m;
+    for (int i=0; i < num; i++) {
+      char val = v[from].back();
+      v[from].pop_back();
+      v[to].push_back(val);
+    }
+  }
+
+
+  string result;
+  for (int i=0; i < crates; i++) {
+    if (v[i].size() == 0) {
+      continue;
+    }
+    result += v[i].back();
+  }
+  cout << result << endl;
+}
+
+void part2(vector<vector<char>> v, const vector<tuple<int, int, int>>& moves, const int crates=10) {
+  for (const auto& m : moves) {
+    int num, from, to;
+    tie(num, from, to) = m;
+    // for (const auto& vv : v) {
+    //   copy (vv.begin(), vv.end(), ostream_iterator<char>(cout, " "));
+    // }
+    move(v[from].end() - num, v[from].end(), back_inserter(v[to]));
+    v[from].erase(v[from].end() - num, v[from].end());
+  }
+
+
+  string result;
+  for (int i=0; i < crates; i++) {
+    if (v[i].size() == 0) {
+      continue;
+    }
+    result += v[i].back();
+  }
+  cout << result << endl;
+}
+
 int main(int argc, char** argv) {
   ifstream ifs("input", ios::in);
   string line;
@@ -57,23 +101,6 @@ int main(int argc, char** argv) {
     moves.push_back(make_tuple(num, from-1, to-1));
   }
 
-  for (const auto& m : moves) {
-    int num, from, to;
-    tie(num, from, to) = m;
-    for (int i=0; i < num; i++) {
-      char val = v[from].back();
-      v[from].pop_back();
-      v[to].push_back(val);
-    }
-  }
-
-
-  string result;
-  for (int i=0; i < crates; i++) {
-    if (v[i].size() == 0) {
-      continue;
-    }
-    result += v[i].back();
-  }
-  cout << result << endl;
+  part1(v, moves);
+  part2(v, moves);
 }
