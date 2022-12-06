@@ -13,16 +13,18 @@
 using namespace std;
 
 void part1(const string& line, int size) {
-  deque<char> q(line.begin(), line.begin()+size);
+  array<int, 256> arr = {0};
+  for (int i=0; i < size; i++) {
+    arr[line[i] - 'a']++;
+  }
+
   for (int i=size; i < line.size(); i++) {
-    set<char> s(q.begin(), q.end());
-    if (s.size() == size) {
+    if (*max_element(arr.begin(), arr.end()) == 1) {
       cout << i << endl;
       return;
     }
-    
-    q.pop_front();
-    q.push_back(line[i]);
+    arr[line[i] - 'a']++;
+    arr[line[i-size]-'a']--;
   }
 }
 
