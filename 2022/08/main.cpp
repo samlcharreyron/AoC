@@ -126,6 +126,72 @@ void part1(const Grid& grid, int sx, int sy) {
   cout << sum << endl;
 }
 
+void part2(const Grid& grid, int sx, int sy) {
+  auto dist_l = Grid(sx, vector<int>(sy, 0));
+
+  for (int i=0; i < sx ; i++) {
+    for (int j=1; j < sy; j++) {
+      if (grid[i][j] > grid[i][j-1]) {
+        dist_l[i][j] = dist_l[i][j-1] + 1;
+      } else {
+        dist_l[i][j] = 1;
+      }
+    }
+  }
+
+  auto dist_r = Grid(sx, vector<int>(sy, 0));
+
+  for (int i=0; i < sx ; i++) {
+    for (int j=(sy-2); j >= 0; j--) {
+      if (grid[i][j] > grid[i][j+1]) {
+        dist_r[i][j] = dist_r[i][j+1] + 1;
+      } else {
+        dist_r[i][j] = 1;
+      }
+    }
+  }
+
+  auto dist_u = Grid(sx, vector<int>(sy, 0));
+
+  for (int i=1; i < sx ; i++) {
+    for (int j=0; j < sy; j++) {
+      if (grid[i][j] > grid[i-1][j]) {
+        dist_u[i][j] = dist_u[i-1][j] + 1;
+      } else {
+        dist_u[i][j] = 1;
+      }
+    }
+  }
+  
+  auto dist_d = Grid(sx, vector<int>(sy, 0));
+
+  for (int i=(sx-2); i >= 0 ; i--) {
+    for (int j=0; j < sy ; j++) {
+      if (grid[i][j] > grid[i+1][j]) {
+        dist_d[i][j] = dist_d[i+1][j] + 1;
+      } else {
+        dist_d[i][j] = 1;
+      }
+    }
+  }
+
+  // print(dist_d);
+
+  size_t max_prod = 0;
+  for (int i=0; i < sx ; i++) {
+    for (int j=0; j < sy; j++) {
+        int prod = dist_l[i][j] * dist_r[i][j] * dist_u[i][j] * dist_d[i][j];
+        if (prod > max_prod) {
+          cout << "i=" << i << " j=" << j << " prod=" << prod << endl;
+          cout << "l=" << dist_l[i][j] << " r=" << dist_r[i][j] << " u=" << dist_u[i][j] << " d=" << dist_d[i][j] << endl;
+          max_prod = prod;
+        }
+      }
+    }
+
+   cout << max_prod << endl;
+}
+
 int main(int argc, char** argv) {
   ifstream ifs("input", ios::in);
   string line;
@@ -140,6 +206,7 @@ int main(int argc, char** argv) {
   const int sy = grid[0].size();
 
   part1(grid, sx, sy);
+  part2(grid, sx, sy);
 
   return 0;
 }
