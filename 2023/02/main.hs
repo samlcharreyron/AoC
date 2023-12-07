@@ -1,6 +1,8 @@
 import System.IO
-import Data.Map (fromList, (!?))
+import Data.Map (Map, fromList, (!?), insertWith, empty)
+import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
+import Debug.Trace
 -- import Data.Text (splitOn)
   --
 type Bag = [(String, Int)]
@@ -16,7 +18,7 @@ splitBy delimiter = foldr f [[]]
 getTuple :: String -> (String, Int)
 getTuple line = (last (words line), read $ head (words line)) 
 
-getBagContents :: String -> [(String, Int)]
+getBagContents :: String -> Bag
 getBagContents line =  map getTuple (splitBy ',' line)
 
 getGame :: String -> Game
@@ -36,8 +38,27 @@ part1 :: [String] -> Int
 part1 lines = sum (map gid valid_games)
   where valid_games = filter isValidGame (map getGame lines)
 
+insertCube :: (String, Int) -> Map String Int -> Map String Int
+insertCube entry = insertWith max color num 
+  where color = fst entry
+        num = snd entry
+
+insertCubes :: [Bag] -> Bag
+insertCubes bags = Map.toList $ foldr insertCube empty (concat bags)
+
+getCubeVal :: Bag -> Int
+getCubeVal bag = product $ map snd bag
+
+part2 :: [String] -> Int
+part2 lines = sum cube_vals
+  where 
+    games = map getGame lines
+    cube_vals :: [Int] = map ((getCubeVal . insertCubes) . bags) games
+
 main :: IO ()
 main = do
     handle <- openFile "input" ReadMode
     contents <- hGetContents handle
-    print(part1 $ lines contents)
+    let inp = lines contents
+    print(part1 inp)
+    print(part2 inp)
